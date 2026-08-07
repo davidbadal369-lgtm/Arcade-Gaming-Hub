@@ -11,10 +11,11 @@ const AVATAR_OPTIONS = [
 const COLOR_OPTIONS = ['#e94560', '#00fff5', '#ffbd39', '#9d0191'];
 
 let players = [];
+let selectedMinigameIds = [];
 let currentPlayerIndex = 0;
 const TOTAL_TILES = 20;
 
-// MINIHRY S FILTROVÁNÍM
+// DATABÁZE MINIHER
 const MINIGAMES = [
   {
     id: 'reaction_test',
@@ -45,7 +46,7 @@ const MINIGAMES = [
     title: '🧮 Rychlé Počty',
     minPlayers: 1,
     maxPlayers: 4,
-    description: 'Spočítej příklad!',
+    description: 'Spočítej příklad do limitu!',
     start: function(container, onComplete) {
       const a = Math.floor(Math.random() * 10) + 1;
       const b = Math.floor(Math.random() * 10) + 1;
@@ -53,7 +54,7 @@ const MINIGAMES = [
       
       container.innerHTML = `
         <p style="font-size: 20px;">Kolik je <strong>${a} × ${b}</strong>?</p>
-        <input type="number" id="math-answer" style="margin-bottom: 10px;" />
+        <input type="number" id="math-answer" style="margin-bottom: 10px; width: 80%;" />
         <button id="math-submit" class="btn-primary">Odeslat</button>
       `;
       
@@ -105,28 +106,54 @@ const MINIGAMES = [
   }
 ];
 
-// 1. INICIALIZACE VYTVOŘENÍ FORMULÁŘE HRÁČŮ
+// 1. INICIALIZACE A FILTROVÁNÍ NABÍDKY V MENU
 function updatePlayerSetup() {
   const countSelect = document.getElementById('player-count');
   if (!countSelect) return;
   const count = parseInt(countSelect.value);
-  const container = document.getElementById('players-config-container');
-  if (!container) return;
   
+  // Aktualizace profilů hráčů
+  const container = document.getElementById('players-config-container');
+  if (container) {
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const avatarOptionsHTML = AVATAR_OPTIONS.map(a => `<option value="${a.emoji}">${a.emoji} ${a.label}</option>`).join('');
+      container.innerHTML += `
+        <div class="player-row">
+          <label>Hráč ${i + 1}:</label>
+          <input type="text" id="p-name-${i}" value="Hráč ${i + 1}" placeholder="Jméno">
+          <select id="p-avatar-${i}">${avatarOptionsHTML}</select>
+          <div style="width: 20px; height: 20px; background-color: ${COLOR_OPTIONS[i]}; border-radius: 50%;"></div>
+        </div>
+      `;
+    }
+  }
+
+  // Aktualizace nabídky miniher podle počtu hráčů
+  renderMinigameOptions(count);
+}
+
+function renderMinigameOptions(playerCount) {
+  const container = document.getElementById('minigames-selection-container');
+  if (!container) return;
+
   container.innerHTML = '';
 
-  for (let i = 0; i < count; i++) {
-    const avatarOptionsHTML = AVATAR_OPTIONS.map(a => `<option value="${a.emoji}">${a.emoji} ${a.label}</option>`).join('');
-    
-    container.innerHTML += `
-      <div class="player-row">
-        <label>Hráč ${i + 1}:</label>
-        <input type="text" id="p-name-${i}" value="Hráč ${i + 1}" placeholder="Jméno">
-        <select id="p-avatar-${i}">${avatarOptionsHTML}</select>
-        <div style="width: 20px; height: 20px; background-color: ${COLOR_OPTIONS[i]}; border-radius: 50%;"></div>
-      </div>
-    `;
+  const validGames = MINIGAMES.filter(g => playerCount >= g.minPlayers && playerCount <= g.maxPlayers);
+
+  if (validGames.length === 0) {
+    container.innerHTML = '<span style="color:#aaa;">Pro tento počet hráčů nejsou dostupné žádné minihry.</span>';
+    return;
   }
+
+  validGames.forEach(game => {
+    container.innerHTML += `
+      <label style="display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer;">
+        <input type="checkbox" class="minigame-checkbox" value="${game.id}" checked>
+        ${game.title} <small style="color: #888;">(${game.description})</small>
+      </label>
+    `;
+  });
 }
 
 // 2. SPUŠTĚNÍ HRY
@@ -145,6 +172,10 @@ function startGame() {
     });
   }
 
+  // Uložení vybraných miniher z checkboxů
+  const checkboxes = document.querySelectorAll('.minigame-checkbox:checked');
+  selectedMinigameIds = Array.from(checkboxes).map(cb => cb.value);
+
   document.getElementById('setup-screen').classList.remove('active');
   document.getElementById('game-screen').classList.add('active');
   
@@ -153,7 +184,7 @@ function startGame() {
   updateTurnUI();
 }
 
-// 3. RENDER HERNI DESKY & FIGUREK
+// 3. RENDER DESKY A FIGUREK
 function renderBoard() {
   const board = document.getElementById('board');
   board.innerHTML = '';
@@ -186,7 +217,7 @@ function renderTokens() {
   });
 }
 
-// 4. HOD KOSTKOU A ANIMACE POHYBU
+// 4. LOGIKA POHYBU A MINIHRY
 function rollDice() {
   const btn = document.getElementById('dice-btn');
   btn.disabled = true;
@@ -219,13 +250,8 @@ function movePlayer(player, steps) {
   }, 300);
 }
 
-// 5. TRIGER MINIHRY PODLE FILTRU
 function triggerTileAction() {
-  const playerCount = players.length;
-  
-  const availableMinigames = MINIGAMES.filter(
-    game => playerCount >= game.minPlayers && playerCount <= game.maxPlayers
-  );
+  const availableMinigames = MINIGAMES.filter(g => selectedMinigameIds.includes(g.id));
 
   if (availableMinigames.length === 0) {
     nextTurn();
@@ -263,7 +289,6 @@ function updateTurnUI() {
   document.getElementById('turn-player-name').style.color = current.color;
 }
 
-// Inicializace po načtení
 window.onload = function() {
   updatePlayerSetup();
 };
