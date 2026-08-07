@@ -21,7 +21,7 @@ body {
   box-sizing: border-box;
 }
 
-/* Skrývání obrazovek */
+/* Skrývání a přepínání obrazovek */
 .screen {
   display: none;
   width: 100%;
@@ -37,7 +37,7 @@ body {
   display: block;
 }
 
-/* Nadpisy a texty */
+/* Nadpisy */
 h1, h2 {
   text-align: center;
   color: #fff;
@@ -76,9 +76,9 @@ select:focus, input[type="text"]:focus {
 /* Profily hráčů v menu */
 .player-row {
   background: #0f3460;
-  padding: 15px;
+  padding: 12px 15px;
   border-radius: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -88,6 +88,62 @@ select:focus, input[type="text"]:focus {
 .player-row label {
   white-space: nowrap;
   color: #fff;
+}
+
+/* Mřížka dlaždic pro minihry */
+.minigames-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-top: 5px;
+}
+
+/* Dlaždice minihry */
+.minigame-card {
+  background: #0f3460;
+  border: 2px solid #16213e;
+  border-radius: 10px;
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.minigame-card:hover {
+  border-color: var(--accent-hover);
+  transform: translateY(-3px);
+}
+
+/* Aktivní (vybraná) dlaždice */
+.minigame-card.selected {
+  background: linear-gradient(135deg, #1f4068, #16213e);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 12px rgba(233, 69, 96, 0.5);
+}
+
+.minigame-card .icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.minigame-card .title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.minigame-card .badge {
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 2px 6px;
+  border-radius: 10px;
+  color: var(--text-dim);
 }
 
 /* Tlačítka */
@@ -110,7 +166,7 @@ select:focus, input[type="text"]:focus {
   background: linear-gradient(135deg, var(--accent-hover), #16213e);
 }
 
-/* Deska */
+/* Herní deska */
 .header-info {
   display: flex;
   justify-content: space-between;
