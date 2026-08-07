@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desková Hra</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --accent-color: #bb86fc;
+            --text-color: #ffffff;
+            --btn-bg: #03dac6;
+            --btn-text: #000000;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        /* Tlačítka pro minihry */
+        .minigame-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            background-color: #01b0a1;
+        }
+
+        /* Ploygrind Sekce Miniher */
+        .game-window {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .game-window.active {
+            display: flex;
+        }
+
+        /* Styling První Minihry (Kostka) */
+        .dice-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .dice-display {
+            font-size: 64px;
+            font-weight: bold;
+            color: #ffb74d;
+            margin: 15px 0;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px dashed var(--accent-color);
+            border-radius: 12px;
+            width: 120px;
+            background-color: #121212;
+        }
+
+        /* Skrytý shop */
+        .shop-section {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Desková Hra & Minihry</h1>
+
+    <!-- Navigace Miniher -->
+    <div class="minigame-container">
+        <button class="btn" onclick="openGame('game1')">Minihra 1: Kostka</button>
+        <button class="btn" onclick="openGame('game2')">Minihra 2</button>
+    </div>
+
+    <!-- Minihra 1: Hod kostkou -->
+    <div id="game1" class="game-window active">
+        <h2>Minihra 1: Hod Kostkou</h2>
+        <p>Hod' kostkou pro určení tvého postupu nebo odměny!</p>
+        
+        <div class="dice-area">
+            <div id="diceResult" class="dice-display">?</div>
+            <button class="btn" onclick="rollDice()">HÁZET KOSTKOU</button>
+        </div>
+    </div>
+
+    <!-- Minihra 2 -->
+    <div id="game2" class="game-window">
+        <h2>Minihra 2</h2>
+        <p>Příprava pro další minihru...</p>
+    </div>
+
+    <!-- Skrytá sekce Shopu -->
+    <div id="shop" class="shop-section">
+        <h2>Obchod</h2>
+    </div>
+
+    <script>
+        function openGame(gameId) {
+            const windows = document.querySelectorAll('.game-window');
+            windows.forEach(win => win.classList.remove('active'));
+            
+            const selectedGame = document.getElementById(gameId);
+            if (selectedGame) {
+                selectedGame.classList.add('active');
+            }
+        }
+
+        function rollDice() {
+            const resultElem = document.getElementById('diceResult');
+            let counter = 0;
+            
+            // Efekt rotace čísel
+            const interval = setInterval(() => {
+                resultElem.textContent = Math.floor(Math.random() * 6) + 1;
+                counter++;
+                if (counter > 10) {
+                    clearInterval(interval);
+                    const finalRoll = Math.floor(Math.random() * 6) + 1;
+                    resultElem.textContent = finalRoll;
+                }
+            }, 50);
+        }
+    </script>
+</body>
+</html>
