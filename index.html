@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="cs">
-<head!-- CrazyGames SDK v3 -->
-<script src="https://sdk.crazygames.com/crazygames-sdk-v3.js"></script>>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ARCADE HUB</title>
@@ -10,6 +9,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- CRAZYGAMES SDK v3 -->
+  <script src="https://sdk.crazygames.com/crazygames-sdk-v3.js"></script>
 
   <link rel="stylesheet" href="style.css">
 </head>
@@ -97,9 +99,7 @@
 
       <div class="form-group">
         <label>Vyber si Avatara:</label>
-        <div class="avatar-selector-grid" id="avatar-selector">
-          <!-- Vygenerováno v JS -->
-        </div>
+        <div class="avatar-selector-grid" id="avatar-selector"></div>
       </div>
 
       <button class="btn-launch" onclick="saveUserProfile()">Uložit Změny</button>
@@ -113,6 +113,16 @@
       <h2>💎 Krystaly & Bonusy</h2>
       <p style="text-align: center; color: var(--text-dim);">Aktuální stav: <strong id="modal-gem-count" style="color:#00ffff;">680</strong> 💎</p>
       
+      <!-- REKLAMA ZA KRYSTALY -->
+      <div class="shop-item">
+        <div>
+          <h4>Sleduj Reklamu</h4>
+          <small>Získej okamžitě +200 💎 zdarma</small>
+        </div>
+        <button class="btn-launch" onclick="watchAdForGems(200)">Sledovat (+200💎)</button>
+      </div>
+
+      <!-- DENNÍ BONUS -->
       <div class="shop-item">
         <div>
           <h4>Denní Bonus</h4>
@@ -121,10 +131,11 @@
         <button class="btn-launch" id="daily-bonus-btn" onclick="claimDailyBonus()">Vyzvednout</button>
       </div>
 
+      <!-- VÝZVA DNE -->
       <div class="shop-item">
         <div>
           <h4>Výzva Dne</h4>
-          <small>Zahraj si Crystal Reflex a vyhraj až 200 💎</small>
+          <small>Zahraj si Crystal Reflex a vyhrej krystaly</small>
         </div>
         <button class="btn-launch" onclick="openReflexGame()">Hrát</button>
       </div>
@@ -173,7 +184,7 @@
     <div class="modal-card">
       <button class="close-modal" onclick="closeModals()">✕</button>
       <h2>⚡ Crystal Reflex</h2>
-      <p style="text-align: center;">Klikni na krystal hned, jakmile se objeví! Získej krystaly do profilu.</p>
+      <p style="text-align: center;">Klikni na krystal hned, jakmile se objeví!</p>
       <div id="reflex-game-area" class="reflex-area">
         <button id="start-reflex-btn" class="btn-launch" onclick="runReflexRound()">Start Kola</button>
       </div>
