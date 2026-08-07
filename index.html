@@ -8,45 +8,50 @@
 </head>
 <body>
 
-  <!-- NASTAVENÍ HRY (LOBBY) -->
+  <!-- OBRAZOVKA NASTAVENÍ HRY -->
   <div id="setup-screen" class="screen active">
     <h1>Nastavení Hry</h1>
-    
+
     <div class="setup-group">
       <label for="player-count">Počet hráčů:</label>
       <select id="player-count" onchange="updatePlayerSetup()">
         <option value="1">1 Hráč (Sólo režim)</option>
-        <option value="2" selected>2 Hráči</option>
+        <option value="2">2 Hráči</option>
         <option value="3">3 Hráči</option>
         <option value="4">4 Hráči</option>
       </select>
     </div>
 
-    <div id="players-config-container">
-      <!-- Zde se dynamicky vygenerují profily hráčů podle volby -->
+    <!-- KONTEJNER PRO SOUPEŘE / PROFILY HRÁČŮ -->
+    <div class="setup-group">
+      <label>Profily hráčů:</label>
+      <div id="players-config-container"></div>
+    </div>
+
+    <!-- MŘÍŽKA DLAŽDIC MINIHER -->
+    <div class="setup-group">
+      <label>Aktivní minihry (kliknutím zapni / vypni):</label>
+      <div id="minigames-selection-container" class="minigames-grid"></div>
     </div>
 
     <button class="btn-primary" onclick="startGame()">Spustit Hru</button>
   </div>
 
-  <!-- HERNOSTNÍ DESKA -->
+  <!-- OBRAZOVKA SAMOTNÉ HRY -->
   <div id="game-screen" class="screen">
     <div class="header-info">
-      <div id="current-turn-indicator">Na řadě je: <span id="turn-player-name">-</span></div>
-      <button id="dice-btn" onclick="rollDice()">🎲 Hodit kostkou</button>
-      <div id="dice-result"></div>
+      <div>Na řadě je: <strong id="turn-player-name">-</strong></div>
+      <div id="dice-result">Hodil jsi: -</div>
     </div>
+
+    <button id="dice-btn" onclick="rollDice()">🎲 Hodit kostkou</button>
 
     <div class="board-container">
-      <div id="board" class="board">
-        <!-- Herní políčka budou vygenerována pomocí JS -->
-      </div>
+      <div id="board" class="board"></div>
     </div>
-
-    <div id="scoreboard" class="scoreboard"></div>
   </div>
 
-  <!-- MODÁLNÍ OKNO PRO MINIHRY -->
+  <!-- MODÁLNÍ OKNO MINIHRY -->
   <div id="minigame-modal" class="modal hidden">
     <div class="modal-content">
       <h2 id="minigame-title">Minihra</h2>
