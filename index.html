@@ -3,60 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interaktivní Desková Hra</title>
+  <title>ARCADE HUB</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- OBRAZOVKA NASTAVENÍ HRY -->
-  <div id="setup-screen" class="screen active">
-    <h1>Nastavení Hry</h1>
-
-    <div class="setup-group">
-      <label for="player-count">Počet hráčů:</label>
-      <select id="player-count" onchange="updatePlayerSetup()">
-        <option value="1">1 Hráč (Sólo režim)</option>
-        <option value="2">2 Hráči</option>
-        <option value="3">3 Hráči</option>
-        <option value="4">4 Hráči</option>
-      </select>
+  <!-- HORNÍ NAVIGAČNÍ LIŠTA -->
+  <header class="navbar">
+    <div class="logo">
+      <span class="logo-arcade">ARCADE</span>
+      <span class="logo-hub">HUB</span>
     </div>
-
-    <!-- KONTEJNER PRO SOUPEŘE / PROFILY HRÁČŮ -->
-    <div class="setup-group">
-      <label>Profily hráčů:</label>
-      <div id="players-config-container"></div>
+    <div class="user-widgets">
+      <div class="gems-pill">
+        <span class="gem-icon">💎</span>
+        <span id="gem-count">680</span>
+      </div>
+      <div class="user-pill">
+        <div class="avatar-circle">🕶️</div>
+        <span class="user-name">David</span>
+      </div>
     </div>
+  </header>
 
-    <!-- MŘÍŽKA DLAŽDIC MINIHER -->
-    <div class="setup-group">
-      <label>Aktivní minihry (kliknutím zapni / vypni):</label>
-      <div id="minigames-selection-container" class="minigames-grid"></div>
+  <!-- HLAVNÍ OBSAHOVÁ ČÁST HUB -->
+  <main class="hub-container">
+    <section class="hub-header">
+      <h1>🚀 Vyber si minihru</h1>
+      <p>Hraj hry, sbírej krystaly a odemykej nové avatary!</p>
+    </section>
+
+    <!-- MŘÍŽKA KARET HER -->
+    <div class="games-grid">
+
+      <!-- KARTA 1: PSYCHO ZRCADLO 100 -->
+      <div class="game-card">
+        <div class="card-banner banner-pink">
+          <span class="card-badge badge-popular">POPULÁRNÍ</span>
+          <div class="card-icon">🪞</div>
+        </div>
+        <div class="card-body">
+          <h3>Psycho Zrcadlo 100</h3>
+          <p>Taktická desková hra na 100 políček se zrcadlovými efekty, pastmi a teleporty!</p>
+          <button class="btn-launch" onclick="openBoardGameSetup()">Spustit hru</button>
+        </div>
+      </div>
+
+      <!-- KARTA 2: CRYSTAL REFLEX -->
+      <div class="game-card">
+        <div class="card-banner banner-teal">
+          <span class="card-badge badge-action">RYCHLÁ AKCE</span>
+          <div class="card-icon">⚡</div>
+        </div>
+        <div class="card-body">
+          <h3>Crystal Reflex</h3>
+          <p>Postřehová minihra! Klikej na krystaly co nejrychleji a nahraj vysoké skóre.</p>
+          <button class="btn-launch" onclick="openReflexGame()">Spustit hru</button>
+        </div>
+      </div>
+
+      <!-- KARTA 3: MEMORY CRYPTO (ZAMČENO) -->
+      <div class="game-card card-locked">
+        <div class="card-banner banner-dark">
+          <div class="card-icon">🔒</div>
+        </div>
+        <div class="card-body">
+          <h3>Memory Crypto</h3>
+          <p>Tematické pexeso o krystaly a bonusy. Připravujeme pro vás v příští aktualizaci!</p>
+          <button class="btn-disabled" disabled>Již brzy</button>
+        </div>
+      </div>
+
     </div>
+  </main>
 
-    <button class="btn-primary" onclick="startGame()">Spustit Hru</button>
+  <!-- MODÁLNÍ OKNO NASTAVENÍ PRO "PSYCHO ZRCADLO 100" -->
+  <div id="board-setup-modal" class="modal hidden">
+    <div class="modal-card">
+      <button class="close-modal" onclick="closeModals()">✕</button>
+      <h2>Nastavení Psycho Zrcadlo 100</h2>
+      
+      <div class="form-group">
+        <label for="player-count">Počet hráčů:</label>
+        <select id="player-count" onchange="updatePlayerSetup()">
+          <option value="1">1 Hráč (Sólo)</option>
+          <option value="2">2 Hráči</option>
+          <option value="3">3 Hráči</option>
+          <option value="4">4 Hráči</option>
+        </select>
+      </div>
+
+      <div id="players-config-container" class="form-group"></div>
+
+      <button class="btn-launch" onclick="startBoardGame()">Začít Hru (100 Polí)</button>
+    </div>
   </div>
 
-  <!-- OBRAZOVKA SAMOTNÉ HRY -->
-  <div id="game-screen" class="screen">
-    <div class="header-info">
-      <div>Na řadě je: <strong id="turn-player-name">-</strong></div>
-      <div id="dice-result">Hodil jsi: -</div>
-    </div>
-
-    <button id="dice-btn" onclick="rollDice()">🎲 Hodit kostkou</button>
-
-    <div class="board-container">
-      <div id="board" class="board"></div>
+  <!-- MODÁLNÍ OKNO DESKOVÉ HRY (100 POLÍČEK) -->
+  <div id="board-game-modal" class="modal hidden">
+    <div class="modal-card modal-large">
+      <button class="close-modal" onclick="closeModals()">✕</button>
+      <div class="game-status-bar">
+        <div>Hráč na řadě: <strong id="turn-player-name">-</strong></div>
+        <div id="dice-result">Hodil jsi: -</div>
+        <button id="dice-btn" class="btn-launch" onclick="rollDice()">🎲 Hodit kostkou</button>
+      </div>
+      <div class="board-100-container">
+        <div id="board-100" class="board-100-grid"></div>
+      </div>
     </div>
   </div>
 
-  <!-- MODÁLNÍ OKNO MINIHRY -->
-  <div id="minigame-modal" class="modal hidden">
-    <div class="modal-content">
-      <h2 id="minigame-title">Minihra</h2>
-      <p id="minigame-desc"></p>
-      <div id="minigame-container"></div>
+  <!-- MODÁLNÍ OKNO REFLEXNÍ HRA -->
+  <div id="reflex-modal" class="modal hidden">
+    <div class="modal-card">
+      <button class="close-modal" onclick="closeModals()">✕</button>
+      <h2>⚡ Crystal Reflex</h2>
+      <p>Klikni na krystal hned, jakmile se objeví! Získej krystaly do profilu.</p>
+      <div id="reflex-game-area" class="reflex-area">
+        <button id="start-reflex-btn" class="btn-launch" onclick="runReflexRound()">Start Kola</button>
+      </div>
     </div>
   </div>
 
