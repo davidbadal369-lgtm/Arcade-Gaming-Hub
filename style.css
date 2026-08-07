@@ -7,7 +7,9 @@
   --btn-gradient: linear-gradient(90deg, #8100e6, #e0007b);
   --text-main: #ffffff;
   --text-dim: #9893b0;
-  --border-card: rgba(255, 255, 255, 0.08);
+  --border-card: rgba(255, 255, 255, 0.12);
+  --arcade-font-heading: 'Press Start 2P', monospace;
+  --arcade-font-body: 'Pixelify Sans', cursive, sans-serif;
 }
 
 body {
@@ -15,8 +17,35 @@ body {
   padding: 0;
   background-color: var(--bg-dark);
   color: var(--text-main);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: var(--arcade-font-body);
+  font-size: 18px;
   min-height: 100vh;
+  letter-spacing: 0.5px;
+}
+
+/* ARKÁDOVÉ NADPISY */
+h1, h2, h3, h4, .logo {
+  font-family: var(--arcade-font-heading);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+h1 {
+  font-size: 22px;
+  line-height: 1.4;
+}
+
+h2 {
+  font-size: 18px;
+  text-align: center;
+  color: #ff007f;
+  text-shadow: 2px 2px 0px #000;
+  margin-top: 0;
+}
+
+h3 {
+  font-size: 14px;
+  line-height: 1.3;
 }
 
 /* HORNÍ NAVIGAČNÍ LIŠTA */
@@ -25,23 +54,31 @@ body {
   justify-content: space-between;
   align-items: center;
   background-color: var(--nav-bg);
-  padding: 14px 40px;
-  border-bottom: 1px solid var(--border-card);
+  padding: 16px 30px;
+  border-bottom: 3px solid #1f1a42;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
 
 .logo {
-  font-weight: 900;
-  font-size: 22px;
-  letter-spacing: 1px;
+  font-size: 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
 }
 
 .logo-arcade {
   color: #00f2fe;
+  text-shadow: 2px 2px 0px #000;
 }
 
 .logo-hub {
   color: #ff007f;
-  margin-left: 6px;
+  margin-left: 4px;
+  text-shadow: 2px 2px 0px #000;
 }
 
 .user-widgets {
@@ -50,37 +87,61 @@ body {
   gap: 15px;
 }
 
+/* KLIKATELNÉ PILLSY V LIŠTĚ */
 .gems-pill {
   background: #1d1738;
-  border: 1px solid #e09f00;
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-weight: bold;
+  border: 2px solid #e09f00;
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-family: var(--arcade-font-heading);
+  font-size: 11px;
   display: flex;
   align-items: center;
   gap: 8px;
   color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 0px #8a6200;
+}
+
+.gems-pill:hover {
+  background: #2a2252;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0px #8a6200;
 }
 
 .user-pill {
   background: #1d1738;
+  border: 2px solid #6a008a;
   padding: 4px 14px 4px 6px;
-  border-radius: 20px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   gap: 10px;
-  font-weight: 600;
+  font-family: var(--arcade-font-body);
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 0px #3d0052;
+}
+
+.user-pill:hover {
+  background: #2a2252;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0px #3d0052;
 }
 
 .avatar-circle {
-  background: #6a008a;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  background: #8100e6;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 18px;
+  border: 1px solid #fff;
 }
 
 /* HLAVNÍ OBSAH */
@@ -94,18 +155,10 @@ body {
   margin-bottom: 30px;
 }
 
-.hub-header h1 {
-  font-size: 28px;
-  margin: 0 0 8px 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .hub-header p {
   color: var(--text-dim);
-  margin: 0;
-  font-size: 15px;
+  margin: 8px 0 0 0;
+  font-size: 18px;
 }
 
 /* MŘÍŽKA HER */
@@ -125,50 +178,44 @@ body {
   background: var(--card-bg);
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid var(--border-card);
+  border: 2px solid var(--border-card);
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
 
 .game-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  transform: translateY(-5px);
+  border-color: #ff007f;
+  box-shadow: 0 10px 25px rgba(255, 0, 127, 0.2);
 }
 
 .card-banner {
-  height: 160px;
+  height: 150px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-bottom: 2px solid var(--border-card);
 }
 
-.banner-pink {
-  background: var(--pink-gradient);
-}
-
-.banner-teal {
-  background: var(--teal-gradient);
-}
-
-.banner-dark {
-  background: #232038;
-}
+.banner-pink { background: var(--pink-gradient); }
+.banner-teal { background: var(--teal-gradient); }
+.banner-dark { background: #232038; }
 
 .card-icon {
-  font-size: 50px;
+  font-size: 55px;
+  filter: drop-shadow(3px 3px 0px rgba(0,0,0,0.5));
 }
 
 .card-badge {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
+  top: 12px;
+  right: 12px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-family: var(--arcade-font-heading);
+  font-size: 8px;
   background: #000;
 }
 
@@ -189,45 +236,49 @@ body {
   flex-grow: 1;
 }
 
-.card-body h3 {
-  margin: 0 0 10px 0;
-  font-size: 20px;
-}
-
 .card-body p {
   color: var(--text-dim);
-  font-size: 13px;
-  line-height: 1.5;
-  margin: 0 0 20px 0;
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 10px 0 20px 0;
   flex-grow: 1;
 }
 
-/* TLAČÍTKA */
+/* ARKÁDOVÁ TLAČÍTKA */
 .btn-launch {
   background: var(--btn-gradient);
   color: #fff;
-  border: none;
+  border: 2px solid #fff;
   padding: 12px;
   border-radius: 10px;
-  font-weight: bold;
-  font-size: 15px;
+  font-family: var(--arcade-font-heading);
+  font-size: 10px;
   cursor: pointer;
   width: 100%;
-  transition: opacity 0.2s;
+  transition: all 0.15s;
+  box-shadow: 0 4px 0px #4d0030;
+  text-transform: uppercase;
 }
 
 .btn-launch:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0px #4d0030;
+  background: linear-gradient(90deg, #9900ff, #ff0088);
+}
+
+.btn-launch:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0px #4d0030;
 }
 
 .btn-disabled {
   background: #2a273b;
   color: #5c5770;
-  border: none;
+  border: 2px solid #3d3854;
   padding: 12px;
   border-radius: 10px;
-  font-weight: bold;
-  font-size: 15px;
+  font-family: var(--arcade-font-heading);
+  font-size: 10px;
   width: 100%;
   cursor: not-allowed;
 }
@@ -236,8 +287,8 @@ body {
 .modal {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(10, 8, 22, 0.85);
-  backdrop-filter: blur(5px);
+  background: rgba(10, 8, 22, 0.9);
+  backdrop-filter: blur(6px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -251,12 +302,13 @@ body {
 
 .modal-card {
   background: var(--card-bg);
-  border: 1px solid var(--border-card);
+  border: 3px solid #ff007f;
   border-radius: 20px;
   padding: 30px;
   width: 100%;
   max-width: 480px;
   position: relative;
+  box-shadow: 0 0 30px rgba(255, 0, 127, 0.3);
 }
 
 .modal-large {
@@ -265,13 +317,22 @@ body {
 
 .close-modal {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  font-size: 20px;
+  top: 15px;
+  right: 15px;
+  background: #110e24;
+  border: 2px solid #ff007f;
+  color: #ff007f;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  font-family: var(--arcade-font-heading);
+  font-size: 12px;
   cursor: pointer;
+}
+
+.close-modal:hover {
+  background: #ff007f;
+  color: #fff;
 }
 
 .form-group {
@@ -281,12 +342,79 @@ body {
   gap: 8px;
 }
 
+.form-group label {
+  font-family: var(--arcade-font-heading);
+  font-size: 10px;
+  color: #00ffff;
+}
+
 .form-group select, .form-group input {
   background: #110e24;
-  border: 1px solid #28234a;
+  border: 2px solid #28234a;
   color: #fff;
-  padding: 10px;
+  padding: 12px;
   border-radius: 8px;
+  font-family: var(--arcade-font-body);
+  font-size: 18px;
+  outline: none;
+}
+
+.form-group select:focus, .form-group input:focus {
+  border-color: #ff007f;
+}
+
+/* VYBÍRAČ AVATARŮ */
+.avatar-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.avatar-option {
+  background: #110e24;
+  border: 2px solid #28234a;
+  border-radius: 10px;
+  font-size: 24px;
+  padding: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.avatar-option:hover, .avatar-option.selected {
+  border-color: #00ffff;
+  background: #1d1738;
+  transform: scale(1.1);
+}
+
+/* POLOŽKY V OBCHODU */
+.shop-item {
+  background: #110e24;
+  border: 2px solid #28234a;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.shop-item h4 {
+  margin: 0 0 5px 0;
+  font-size: 11px;
+  color: #ffaa00;
+}
+
+.shop-item small {
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+.shop-item .btn-launch {
+  width: auto;
+  padding: 10px 15px;
 }
 
 /* DESKOVÁ HRA NA 100 POLÍČEK */
@@ -296,8 +424,16 @@ body {
   align-items: center;
   margin-bottom: 15px;
   background: #110e24;
-  padding: 12px;
+  padding: 12px 20px;
   border-radius: 10px;
+  border: 2px solid #28234a;
+  font-family: var(--arcade-font-heading);
+  font-size: 10px;
+}
+
+.game-status-bar .btn-launch {
+  width: auto;
+  padding: 10px 16px;
 }
 
 .board-100-container {
@@ -320,21 +456,23 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  font-weight: bold;
+  font-family: var(--arcade-font-heading);
+  font-size: 8px;
+  color: var(--text-dim);
   position: relative;
 }
 
 .token-100 {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   position: absolute;
-  border: 1px solid #fff;
+  border: 2px solid #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 12px;
+  box-shadow: 0 0 8px #000;
 }
 
 /* REFLEXNÍ ZÓNA */
@@ -342,6 +480,7 @@ body {
   height: 200px;
   background: #110e24;
   border-radius: 12px;
+  border: 2px solid #28234a;
   display: flex;
   align-items: center;
   justify-content: center;
