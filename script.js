@@ -1,4 +1,4 @@
-// MOŽNOSTI AVATARŮ
+// MOŽNOSTI AVATARŮ A BAREV
 const AVATAR_OPTIONS = [
   { id: 'cat', emoji: '🐱', label: 'Kočka' },
   { id: 'robot', emoji: '🤖', label: 'Robot' },
@@ -24,7 +24,7 @@ const MINIGAMES = [
     maxPlayers: 4,
     description: 'Klikni na tlačítko jakmile se změní na zelenou!',
     start: function(container, onComplete) {
-      container.innerHTML = `<button id="reflex-btn" style="padding:15px; background:red; color:white; border:none; border-radius:8px; cursor:pointer; width:100%;">Čekej...</button>`;
+      container.innerHTML = `<button id="reflex-btn" style="padding:15px; background:red; color:white; border:none; border-radius:8px; cursor:pointer; width:100%; font-weight:bold;">Čekej...</button>`;
       const btn = document.getElementById('reflex-btn');
       const delay = Math.floor(Math.random() * 3000) + 2000;
       
@@ -46,7 +46,7 @@ const MINIGAMES = [
     title: '🧮 Rychlé Počty',
     minPlayers: 1,
     maxPlayers: 4,
-    description: 'Spočítej příklad do limitu!',
+    description: 'Spočítej příklad správně!',
     start: function(container, onComplete) {
       const a = Math.floor(Math.random() * 10) + 1;
       const b = Math.floor(Math.random() * 10) + 1;
@@ -54,7 +54,7 @@ const MINIGAMES = [
       
       container.innerHTML = `
         <p style="font-size: 20px;">Kolik je <strong>${a} × ${b}</strong>?</p>
-        <input type="number" id="math-answer" style="margin-bottom: 10px; width: 80%;" />
+        <input type="number" id="math-answer" style="margin-bottom: 15px; width: 80%; padding: 8px; text-align: center;" />
         <button id="math-submit" class="btn-primary">Odeslat</button>
       `;
       
@@ -75,10 +75,10 @@ const MINIGAMES = [
     title: '🎯 Sólo Terče',
     minPlayers: 1,
     maxPlayers: 1,
-    description: 'Sestřel 3 terče!',
+    description: 'Sestřel 3 terče v časovém okně!',
     start: function(container, onComplete) {
       let score = 0;
-      container.innerHTML = `<div id="target-area" style="height:150px; position:relative; background:#0f3460; border-radius:8px;"></div>`;
+      container.innerHTML = `<div id="target-area" style="height:150px; position:relative; background:#0f3460; border-radius:8px; overflow:hidden;"></div>`;
       const area = document.getElementById('target-area');
 
       function spawnTarget() {
@@ -106,13 +106,13 @@ const MINIGAMES = [
   }
 ];
 
-// 1. INICIALIZACE A FILTROVÁNÍ NABÍDKY V MENU
+// INICIALIZACE NASTAVENÍ PROFILŮ A DLAŽDIC MINIHER
 function updatePlayerSetup() {
   const countSelect = document.getElementById('player-count');
   if (!countSelect) return;
   const count = parseInt(countSelect.value);
   
-  // Aktualizace profilů hráčů
+  // Nastavení hráčů
   const container = document.getElementById('players-config-container');
   if (container) {
     container.innerHTML = '';
@@ -129,7 +129,7 @@ function updatePlayerSetup() {
     }
   }
 
-  // Aktualizace nabídky miniher podle počtu hráčů
+  // Generování dlaždic miniher
   renderMinigameOptions(count);
 }
 
@@ -142,21 +142,34 @@ function renderMinigameOptions(playerCount) {
   const validGames = MINIGAMES.filter(g => playerCount >= g.minPlayers && playerCount <= g.maxPlayers);
 
   if (validGames.length === 0) {
-    container.innerHTML = '<span style="color:#aaa;">Pro tento počet hráčů nejsou dostupné žádné minihry.</span>';
+    container.innerHTML = '<span style="color:#aaa; grid-column: 1/-1;">Pro tento počet hráčů nejsou dostupné žádné minihry.</span>';
     return;
   }
 
   validGames.forEach(game => {
-    container.innerHTML += `
-      <label style="display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer;">
-        <input type="checkbox" class="minigame-checkbox" value="${game.id}" checked>
-        ${game.title} <small style="color: #888;">(${game.description})</small>
-      </label>
+    const titleParts = game.title.split(' ');
+    const icon = titleParts[0];
+    const name = titleParts.slice(1).join(' ');
+
+    const card = document.createElement('div');
+    card.className = 'minigame-card selected';
+    card.dataset.gameId = game.id;
+
+    card.innerHTML = `
+      <div class="icon">${icon}</div>
+      <div class="title">${name}</div>
+      <div class="badge">${game.minPlayers === game.maxPlayers ? game.minPlayers + ' Hráč' : game.minPlayers + '-' + game.maxPlayers + ' Hráči'}</div>
     `;
+
+    card.onclick = () => {
+      card.classList.toggle('selected');
+    };
+
+    container.appendChild(card);
   });
 }
 
-// 2. SPUŠTĚNÍ HRY
+// SPUŠTĚNÍ HRY
 function startGame() {
   const count = parseInt(document.getElementById('player-count').value);
   players = [];
@@ -172,19 +185,23 @@ function startGame() {
     });
   }
 
-  // Uložení vybraných miniher z checkboxů
-  const checkboxes = document.querySelectorAll('.minigame-checkbox:checked');
-  selectedMinigameIds = Array.from(checkboxes).map(cb => cb.value);
+  const selectedCards = document.querySelectorAll('.minigame-card.selected');
+  selectedMinigameIds = Array.from(selectedCards).map(card => card.dataset.gameId);
+
+  if (selectedMinigameIds.length === 0) {
+    alert('Vyber prosím alespoň jednu minihru!');
+    return;
+  }
 
   document.getElementById('setup-screen').classList.remove('active');
   document.getElementById('game-screen').classList.add('active');
-  
+
   renderBoard();
   renderTokens();
   updateTurnUI();
 }
 
-// 3. RENDER DESKY A FIGUREK
+// RENDER DESKY A FIGUREK
 function renderBoard() {
   const board = document.getElementById('board');
   board.innerHTML = '';
@@ -217,19 +234,15 @@ function renderTokens() {
   });
 }
 
-// 4. LOGIKA POHYBU A MINIHRY
+// POHYB A LOGIKA KOSTKY
 function rollDice() {
   const btn = document.getElementById('dice-btn');
   btn.disabled = true;
-  btn.classList.add('dice-rolling');
 
-  setTimeout(() => {
-    btn.classList.remove('dice-rolling');
-    const roll = Math.floor(Math.random() * 6) + 1;
-    document.getElementById('dice-result').innerText = `Hodil jsi: ${roll}`;
+  const roll = Math.floor(Math.random() * 6) + 1;
+  document.getElementById('dice-result').innerText = `Hodil jsi: ${roll}`;
 
-    movePlayer(players[currentPlayerIndex], roll);
-  }, 500);
+  movePlayer(players[currentPlayerIndex], roll);
 }
 
 function movePlayer(player, steps) {
