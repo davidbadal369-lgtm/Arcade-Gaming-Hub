@@ -1,6 +1,6 @@
 // GLOBÁLNÍ STAV UŽIVATELE A HRY
 let userProfile = {
-  name: 'David',
+  name: 'User',
   avatar: '🕶️'
 };
 
@@ -16,11 +16,61 @@ const COLORS = ['#e94560', '#00fff5', '#ffbd39', '#9d0191'];
 
 let selectedAvatarInModal = userProfile.avatar;
 
-// INICIALIZACE PO NAČTENÍ
-window.onload = function() {
+// CRAZYGAMES SDK INICIALIZACE
+let crazySDK = null;
+
+window.addEventListener('DOMContentLoaded', async () => {
   updateNavbarUI();
   buildAvatarSelector();
-};
+
+  // Inicializace CrazyGames SDK v3
+  if (window.CrazyGames && window.CrazyGames.SDK) {
+    try {
+      crazySDK = window.CrazyGames.SDK;
+      await crazySDK.init();
+      console.log("CrazyGames SDK úspěšně inicializováno.");
+    } catch (e) {
+      console.error("Chyba při inicializaci CrazyGames SDK:", e);
+    }
+  }
+});
+
+// FUNKCE PRO ZOBRAZENÍ MEZIHERNÍ REKLAMY (MIDROLL)
+function showMidrollAd(onComplete) {
+  if (crazySDK && crazySDK.ad) {
+    crazySDK.ad.requestAd("midroll", {
+      adStarted: () => { console.log("Spuštěna meziherní reklama..."); },
+      adFinished: () => { if (onComplete) onComplete(); },
+      adError: (error) => {
+        console.log("Reklama se nezobrazila / byla blokována:", error);
+        if (onComplete) onComplete();
+      }
+    });
+  } else {
+    // Pokud běžím lokálně bez SDK, pokračuje se ihned
+    if (onComplete) onComplete();
+  }
+}
+
+// FUNKCE PRO ZOBRAZENÍ ODMĚNOVÉ REKLAMY (REWARDED) - KRYSTALY ZDARMA
+function watchAdForGems(gemReward) {
+  if (crazySDK && crazySDK.ad) {
+    crazySDK.ad.requestAd("rewarded", {
+      adStarted: () => { console.log("Odměnová reklama zahájena..."); },
+      adFinished: () => {
+        addGems(gemReward);
+        alert(`🎉 Děkujeme za zhlédnutí! Získal jsi +${gemReward} 💎`);
+      },
+      adError: (error) => {
+        alert("Reklamu se nepodařilo načíst. Zkus to prosím později.");
+      }
+    });
+  } else {
+    // Lokální testovací fallback
+    addGems(gemReward);
+    alert(`[TEST REKLAMY] Získal jsi +${gemReward} 💎`);
+  }
+}
 
 // AKTUALIZACE HORNÍ LIŠTY
 function updateNavbarUI() {
@@ -29,12 +79,12 @@ function updateNavbarUI() {
   document.getElementById('nav-user-avatar').innerText = userProfile.avatar;
 }
 
-// NÁVRAT NA HLAVNÍ STRÁNKU (KLIKNUTÍ NA LOGO)
+// NÁVRAT NA HLAVNÍ STRÁNKU
 function goHome() {
   closeModals();
 }
 
-// OTEVŘENÍ MODÁLNÍCH OKEN
+// OTEVŘENÍ A ZAVŘENÍ MODÁLNÍCH OKEN
 function closeModals() {
   document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
 }
@@ -147,27 +197,30 @@ function updatePlayerSetup() {
   }
 }
 
-// DESKOVÁ HRA (100 POLÍČEK)
+// DESKOVÁ HRA (100 POLÍČEK) S REKLAMOU
 function startBoardGame() {
-  const count = parseInt(document.getElementById('player-count').value);
-  players = [];
+  // Spustí meziherní reklamu před startem deskové hry
+  showMidrollAd(() => {
+    const count = parseInt(document.getElementById('player-count').value);
+    players = [];
 
-  for (let i = 0; i < count; i++) {
-    players.push({
-      id: i,
-      name: document.getElementById(`p-name-${i}`).value || `Hráč ${i + 1}`,
-      avatar: document.getElementById(`p-avatar-${i}`).value,
-      color: COLORS[i],
-      position: 0
-    });
-  }
+    for (let i = 0; i < count; i++) {
+      players.push({
+        id: i,
+        name: document.getElementById(`p-name-${i}`).value || `Hráč ${i + 1}`,
+        avatar: document.getElementById(`p-avatar-${i}`).value,
+        color: COLORS[i],
+        position: 0
+      });
+    }
 
-  closeModals();
-  document.getElementById('board-game-modal').classList.remove('hidden');
-  
-  renderBoard100();
-  renderTokens();
-  updateTurnUI();
+    closeModals();
+    document.getElementById('board-game-modal').classList.remove('hidden');
+    
+    renderBoard100();
+    renderTokens();
+    updateTurnUI();
+  });
 }
 
 function renderBoard100() {
