@@ -1,176 +1,48 @@
-// MOŽNOSTI AVATARŮ A BAREV
-const AVATAR_OPTIONS = [
-  { id: 'cat', emoji: '🐱', label: 'Kočka' },
-  { id: 'robot', emoji: '🤖', label: 'Robot' },
-  { id: 'ninja', emoji: '🥷', label: 'Ninja' },
-  { id: 'alien', emoji: '👽', label: 'Mimozemšťan' },
-  { id: 'wizard', emoji: '🧙‍♂️', label: 'Čaroděj' },
-  { id: 'dragon', emoji: '🐉', label: 'Drak' }
-];
-
-const COLOR_OPTIONS = ['#e94560', '#00fff5', '#ffbd39', '#9d0191'];
-
+// STAV HRY A KRYSTALŮ
+let gemBalance = 680;
 let players = [];
-let selectedMinigameIds = [];
 let currentPlayerIndex = 0;
-const TOTAL_TILES = 20;
+const TOTAL_TILES = 100;
 
-// DATABÁZE MINIHER
-const MINIGAMES = [
-  {
-    id: 'reaction_test',
-    title: '⚡ Rychlé Reflexy',
-    minPlayers: 1,
-    maxPlayers: 4,
-    description: 'Klikni na tlačítko jakmile se změní na zelenou!',
-    start: function(container, onComplete) {
-      container.innerHTML = `<button id="reflex-btn" style="padding:15px; background:red; color:white; border:none; border-radius:8px; cursor:pointer; width:100%; font-weight:bold;">Čekej...</button>`;
-      const btn = document.getElementById('reflex-btn');
-      const delay = Math.floor(Math.random() * 3000) + 2000;
-      
-      setTimeout(() => {
-        btn.style.background = '#00ff88';
-        btn.style.color = '#000';
-        btn.innerText = 'KLIKNI TEĎ!';
-        const readyTime = Date.now();
-        btn.onclick = () => {
-          const score = Date.now() - readyTime;
-          alert(`Tůj čas: ${score} ms!`);
-          onComplete(true);
-        };
-      }, delay);
-    }
-  },
-  {
-    id: 'math_challenge',
-    title: '🧮 Rychlé Počty',
-    minPlayers: 1,
-    maxPlayers: 4,
-    description: 'Spočítej příklad správně!',
-    start: function(container, onComplete) {
-      const a = Math.floor(Math.random() * 10) + 1;
-      const b = Math.floor(Math.random() * 10) + 1;
-      const correct = a * b;
-      
-      container.innerHTML = `
-        <p style="font-size: 20px;">Kolik je <strong>${a} × ${b}</strong>?</p>
-        <input type="number" id="math-answer" style="margin-bottom: 15px; width: 80%; padding: 8px; text-align: center;" />
-        <button id="math-submit" class="btn-primary">Odeslat</button>
-      `;
-      
-      document.getElementById('math-submit').onclick = () => {
-        const val = parseInt(document.getElementById('math-answer').value);
-        if (val === correct) {
-          alert('Správně!');
-          onComplete(true);
-        } else {
-          alert(`Špatně! Správná odpověď byla ${correct}.`);
-          onComplete(false);
-        }
-      };
-    }
-  },
-  {
-    id: 'solo_target_clicker',
-    title: '🎯 Sólo Terče',
-    minPlayers: 1,
-    maxPlayers: 1,
-    description: 'Sestřel 3 terče v časovém okně!',
-    start: function(container, onComplete) {
-      let score = 0;
-      container.innerHTML = `<div id="target-area" style="height:150px; position:relative; background:#0f3460; border-radius:8px; overflow:hidden;"></div>`;
-      const area = document.getElementById('target-area');
+const AVATARS = ['🐱', '🤖', '🥷', '👽', '🧙‍♂️', '🐉'];
+const COLORS = ['#e94560', '#00fff5', '#ffbd39', '#9d0191'];
 
-      function spawnTarget() {
-        if (score >= 3) {
-          alert('Minihra dokončena!');
-          onComplete(true);
-          return;
-        }
-        const target = document.createElement('div');
-        target.innerText = '🎯';
-        target.style.fontSize = '24px';
-        target.style.position = 'absolute';
-        target.style.cursor = 'pointer';
-        target.style.left = Math.random() * 80 + '%';
-        target.style.top = Math.random() * 70 + '%';
-        target.onclick = () => {
-          score++;
-          target.remove();
-          spawnTarget();
-        };
-        area.appendChild(target);
-      }
-      spawnTarget();
-    }
-  }
-];
-
-// INICIALIZACE NASTAVENÍ PROFILŮ A DLAŽDIC MINIHER
-function updatePlayerSetup() {
-  const countSelect = document.getElementById('player-count');
-  if (!countSelect) return;
-  const count = parseInt(countSelect.value);
-  
-  // Nastavení hráčů
-  const container = document.getElementById('players-config-container');
-  if (container) {
-    container.innerHTML = '';
-    for (let i = 0; i < count; i++) {
-      const avatarOptionsHTML = AVATAR_OPTIONS.map(a => `<option value="${a.emoji}">${a.emoji} ${a.label}</option>`).join('');
-      container.innerHTML += `
-        <div class="player-row">
-          <label>Hráč ${i + 1}:</label>
-          <input type="text" id="p-name-${i}" value="Hráč ${i + 1}" placeholder="Jméno">
-          <select id="p-avatar-${i}">${avatarOptionsHTML}</select>
-          <div style="width: 20px; height: 20px; background-color: ${COLOR_OPTIONS[i]}; border-radius: 50%;"></div>
-        </div>
-      `;
-    }
-  }
-
-  // Generování dlaždic miniher
-  renderMinigameOptions(count);
+// OTEVÍRÁNÍ A ZAVÍRÁNÍ MODÁLNÍCH OKEN
+function closeModals() {
+  document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
 }
 
-function renderMinigameOptions(playerCount) {
-  const container = document.getElementById('minigames-selection-container');
-  if (!container) return;
+function openBoardGameSetup() {
+  closeModals();
+  document.getElementById('board-setup-modal').classList.remove('hidden');
+  updatePlayerSetup();
+}
 
+function openReflexGame() {
+  closeModals();
+  document.getElementById('reflex-modal').classList.remove('hidden');
+}
+
+// AKTUALIZACE VOLBY HRÁČŮ
+function updatePlayerSetup() {
+  const count = parseInt(document.getElementById('player-count').value);
+  const container = document.getElementById('players-config-container');
   container.innerHTML = '';
 
-  const validGames = MINIGAMES.filter(g => playerCount >= g.minPlayers && playerCount <= g.maxPlayers);
-
-  if (validGames.length === 0) {
-    container.innerHTML = '<span style="color:#aaa; grid-column: 1/-1;">Pro tento počet hráčů nejsou dostupné žádné minihry.</span>';
-    return;
-  }
-
-  validGames.forEach(game => {
-    const titleParts = game.title.split(' ');
-    const icon = titleParts[0];
-    const name = titleParts.slice(1).join(' ');
-
-    const card = document.createElement('div');
-    card.className = 'minigame-card selected';
-    card.dataset.gameId = game.id;
-
-    card.innerHTML = `
-      <div class="icon">${icon}</div>
-      <div class="title">${name}</div>
-      <div class="badge">${game.minPlayers === game.maxPlayers ? game.minPlayers + ' Hráč' : game.minPlayers + '-' + game.maxPlayers + ' Hráči'}</div>
+  for (let i = 0; i < count; i++) {
+    const avatarOpts = AVATARS.map(a => `<option value="${a}">${a}</option>`).join('');
+    container.innerHTML += `
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">
+        <label>Hráč ${i + 1}:</label>
+        <input type="text" id="p-name-${i}" value="Hráč ${i + 1}" style="flex-grow:1;">
+        <select id="p-avatar-${i}">${avatarOpts}</select>
+      </div>
     `;
-
-    card.onclick = () => {
-      card.classList.toggle('selected');
-    };
-
-    container.appendChild(card);
-  });
+  }
 }
 
-// SPUŠTĚNÍ HRY
-function startGame() {
+// SPUŠTĚNÍ DESKOVÉ HRY (100 POLÍČEK)
+function startBoardGame() {
   const count = parseInt(document.getElementById('player-count').value);
   players = [];
 
@@ -179,62 +51,45 @@ function startGame() {
       id: i,
       name: document.getElementById(`p-name-${i}`).value || `Hráč ${i + 1}`,
       avatar: document.getElementById(`p-avatar-${i}`).value,
-      color: COLOR_OPTIONS[i],
-      position: 0,
-      score: 0
+      color: COLORS[i],
+      position: 0
     });
   }
 
-  const selectedCards = document.querySelectorAll('.minigame-card.selected');
-  selectedMinigameIds = Array.from(selectedCards).map(card => card.dataset.gameId);
-
-  if (selectedMinigameIds.length === 0) {
-    alert('Vyber prosím alespoň jednu minihru!');
-    return;
-  }
-
-  document.getElementById('setup-screen').classList.remove('active');
-  document.getElementById('game-screen').classList.add('active');
-
-  renderBoard();
+  closeModals();
+  document.getElementById('board-game-modal').classList.remove('hidden');
+  
+  renderBoard100();
   renderTokens();
   updateTurnUI();
 }
 
-// RENDER DESKY A FIGUREK
-function renderBoard() {
-  const board = document.getElementById('board');
+function renderBoard100() {
+  const board = document.getElementById('board-100');
   board.innerHTML = '';
   for (let i = 0; i < TOTAL_TILES; i++) {
     const tile = document.createElement('div');
-    tile.className = 'tile';
-    tile.id = `tile-${i}`;
-    tile.innerText = i === 0 ? 'START' : i;
+    tile.className = 'tile-100';
+    tile.id = `tile-100-${i}`;
+    tile.innerText = i === 0 ? 'START' : (i === 99 ? 'CÍL' : i + 1);
     board.appendChild(tile);
   }
 }
 
 function renderTokens() {
-  document.querySelectorAll('.token').forEach(t => t.remove());
+  document.querySelectorAll('.token-100').forEach(t => t.remove());
 
-  players.forEach((player) => {
-    const tile = document.getElementById(`tile-${player.position}`);
+  players.forEach((p) => {
+    const tile = document.getElementById(`tile-100-${p.position}`);
     if (!tile) return;
     const token = document.createElement('div');
-    token.className = 'token';
-    token.id = `token-${player.id}`;
-    token.style.backgroundColor = player.color;
-    token.innerText = player.avatar;
-    token.style.fontSize = '14px';
-
-    const offset = player.id * 6;
-    token.style.transform = `translate(${offset}px, ${offset}px)`;
-
+    token.className = 'token-100';
+    token.style.backgroundColor = p.color;
+    token.innerText = p.avatar;
     tile.appendChild(token);
   });
 }
 
-// POHYB A LOGIKA KOSTKY
 function rollDice() {
   const btn = document.getElementById('dice-btn');
   btn.disabled = true;
@@ -242,66 +97,63 @@ function rollDice() {
   const roll = Math.floor(Math.random() * 6) + 1;
   document.getElementById('dice-result').innerText = `Hodil jsi: ${roll}`;
 
-  movePlayer(players[currentPlayerIndex], roll);
-}
-
-function movePlayer(player, steps) {
-  let targetPosition = player.position + steps;
-  if (targetPosition >= TOTAL_TILES) targetPosition = TOTAL_TILES - 1;
-
-  let currentStep = player.position;
-  const interval = setInterval(() => {
-    if (currentStep < targetPosition) {
-      currentStep++;
-      player.position = currentStep;
-      renderTokens();
-    } else {
-      clearInterval(interval);
-      document.getElementById('dice-btn').disabled = false;
-      triggerTileAction();
-    }
-  }, 300);
-}
-
-function triggerTileAction() {
-  const availableMinigames = MINIGAMES.filter(g => selectedMinigameIds.includes(g.id));
-
-  if (availableMinigames.length === 0) {
-    nextTurn();
-    return;
+  let player = players[currentPlayerIndex];
+  player.position += roll;
+  if (player.position >= TOTAL_TILES) {
+    player.position = TOTAL_TILES - 1;
+    alert(`🎉 Hráč ${player.name} vyhrál hru!`);
+    addGems(50);
   }
 
-  const selectedGame = availableMinigames[Math.floor(Math.random() * availableMinigames.length)];
-  
-  const modal = document.getElementById('minigame-modal');
-  document.getElementById('minigame-title').innerText = selectedGame.title;
-  document.getElementById('minigame-desc').innerText = selectedGame.description;
-  
-  const container = document.getElementById('minigame-container');
-  container.innerHTML = '';
+  renderTokens();
 
-  modal.classList.remove('hidden');
-
-  selectedGame.start(container, (success) => {
-    modal.classList.add('hidden');
-    if (success) {
-      players[currentPlayerIndex].score += 10;
-    }
-    nextTurn();
-  });
-}
-
-function nextTurn() {
-  currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-  updateTurnUI();
+  setTimeout(() => {
+    btn.disabled = false;
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    updateTurnUI();
+  }, 400);
 }
 
 function updateTurnUI() {
   const current = players[currentPlayerIndex];
-  document.getElementById('turn-player-name').innerText = `${current.avatar} ${current.name}`;
-  document.getElementById('turn-player-name').style.color = current.color;
+  if (current) {
+    document.getElementById('turn-player-name').innerText = `${current.avatar} ${current.name}`;
+    document.getElementById('turn-player-name').style.color = current.color;
+  }
 }
 
-window.onload = function() {
-  updatePlayerSetup();
-};
+// SAMOSTATNÁ MINIHRA CRYSTAL REFLEX
+function runReflexRound() {
+  const area = document.getElementById('reflex-game-area');
+  area.innerHTML = '<span style="color:#aaa;">Příprava... Sleduj plochu!</span>';
+
+  const delay = Math.floor(Math.random() * 2000) + 1500;
+
+  setTimeout(() => {
+    area.innerHTML = '';
+    const crystal = document.createElement('button');
+    crystal.innerText = '💎 KLIKNI TEĎ!';
+    crystal.className = 'btn-launch';
+    crystal.style.position = 'absolute';
+    crystal.style.width = 'auto';
+    crystal.style.padding = '15px 25px';
+
+    const startTime = Date.now();
+
+    crystal.onclick = () => {
+      const reactionTime = Date.now() - startTime;
+      const earned = Math.max(5, Math.floor(10000 / reactionTime));
+      addGems(earned);
+      alert(`Skvělý reflex! Čas: ${reactionTime} ms. Získal jsi +${earned} krystalů!`);
+      area.innerHTML = '<button id="start-reflex-btn" class="btn-launch" onclick="runReflexRound()">Hráte Znova</button>';
+    };
+
+    area.appendChild(crystal);
+  }, delay);
+}
+
+// PRÁCE S KRYSTALY
+function addGems(amount) {
+  gemBalance += amount;
+  document.getElementById('gem-count').innerText = gemBalance;
+}
