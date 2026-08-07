@@ -4,24 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ARCADE HUB</title>
+
+  <!-- ARKÁDOVÉ FONTY Z GOOGLE FONTS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Press+Start+2P&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <!-- HORNÍ NAVIGAČNÍ LIŠTA -->
   <header class="navbar">
-    <div class="logo">
+    <div class="logo" onclick="goHome()" title="Návrat na hlavní nabídku">
       <span class="logo-arcade">ARCADE</span>
       <span class="logo-hub">HUB</span>
     </div>
     <div class="user-widgets">
-      <div class="gems-pill">
+      <div class="gems-pill" onclick="openGemsShop()" title="Otevřít Obchod s krystaly">
         <span class="gem-icon">💎</span>
         <span id="gem-count">680</span>
       </div>
-      <div class="user-pill">
-        <div class="avatar-circle">🕶️</div>
-        <span class="user-name">David</span>
+      <div class="user-pill" onclick="openUserProfile()" title="Upravit profil">
+        <div class="avatar-circle" id="nav-user-avatar">🕶️</div>
+        <span class="user-name" id="nav-user-name">David</span>
       </div>
     </div>
   </header>
@@ -77,11 +83,58 @@
     </div>
   </main>
 
+  <!-- MODÁLNÍ OKNO PROFILU HRÁČE -->
+  <div id="profile-modal" class="modal hidden">
+    <div class="modal-card">
+      <button class="close-modal" onclick="closeModals()">✕</button>
+      <h2>👤 Profil Hráče</h2>
+      
+      <div class="form-group">
+        <label for="profile-name-input">Tvé Jméno:</label>
+        <input type="text" id="profile-name-input" maxlength="15" value="David">
+      </div>
+
+      <div class="form-group">
+        <label>Vyber si Avatara:</label>
+        <div class="avatar-selector-grid" id="avatar-selector">
+          <!-- Vygenerováno v JS -->
+        </div>
+      </div>
+
+      <button class="btn-launch" onclick="saveUserProfile()">Uložit Změny</button>
+    </div>
+  </div>
+
+  <!-- MODÁLNÍ OKNO OBCHODU / KRYSTALŮ -->
+  <div id="gems-modal" class="modal hidden">
+    <div class="modal-card">
+      <button class="close-modal" onclick="closeModals()">✕</button>
+      <h2>💎 Krystaly & Bonusy</h2>
+      <p style="text-align: center; color: var(--text-dim);">Aktuální stav: <strong id="modal-gem-count" style="color:#00ffff;">680</strong> 💎</p>
+      
+      <div class="shop-item">
+        <div>
+          <h4>Denní Bonus</h4>
+          <small>Získej +100 krystalů zdarma</small>
+        </div>
+        <button class="btn-launch" id="daily-bonus-btn" onclick="claimDailyBonus()">Vyzvednout</button>
+      </div>
+
+      <div class="shop-item">
+        <div>
+          <h4>Výzva Dne</h4>
+          <small>Zahraj si Crystal Reflex a vyhraj až 200 💎</small>
+        </div>
+        <button class="btn-launch" onclick="openReflexGame()">Hrát</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODÁLNÍ OKNO NASTAVENÍ PRO "PSYCHO ZRCADLO 100" -->
   <div id="board-setup-modal" class="modal hidden">
     <div class="modal-card">
       <button class="close-modal" onclick="closeModals()">✕</button>
-      <h2>Nastavení Psycho Zrcadlo 100</h2>
+      <h2>Nastavení Hry</h2>
       
       <div class="form-group">
         <label for="player-count">Počet hráčů:</label>
@@ -104,9 +157,9 @@
     <div class="modal-card modal-large">
       <button class="close-modal" onclick="closeModals()">✕</button>
       <div class="game-status-bar">
-        <div>Hráč na řadě: <strong id="turn-player-name">-</strong></div>
+        <div>Na řadě: <strong id="turn-player-name">-</strong></div>
         <div id="dice-result">Hodil jsi: -</div>
-        <button id="dice-btn" class="btn-launch" onclick="rollDice()">🎲 Hodit kostkou</button>
+        <button id="dice-btn" class="btn-launch" onclick="rollDice()">🎲 Hodit</button>
       </div>
       <div class="board-100-container">
         <div id="board-100" class="board-100-grid"></div>
@@ -119,7 +172,7 @@
     <div class="modal-card">
       <button class="close-modal" onclick="closeModals()">✕</button>
       <h2>⚡ Crystal Reflex</h2>
-      <p>Klikni na krystal hned, jakmile se objeví! Získej krystaly do profilu.</p>
+      <p style="text-align: center;">Klikni na krystal hned, jakmile se objeví! Získej krystaly do profilu.</p>
       <div id="reflex-game-area" class="reflex-area">
         <button id="start-reflex-btn" class="btn-launch" onclick="runReflexRound()">Start Kola</button>
       </div>
